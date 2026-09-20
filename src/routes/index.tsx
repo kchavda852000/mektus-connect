@@ -247,7 +247,7 @@ function Architecture() {
   return (
     <section id="architecture" className="bg-brand-light py-24 sm:py-28">
       <div className="mx-auto grid max-w-7xl gap-14 px-5 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:px-8">
-        <div><SectionHeading tag="Reference architecture" title="One Digital Thread. Five Connected Layers." text="Inspect each layer to see how we connect operational truth with enterprise context and applied intelligence." /><div className="mt-8 border-l-2 border-brand-orange pl-5"><p className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Active layer</p><p className="mt-2 font-display text-xl font-bold text-brand-navy">{architecture[active].name}</p><p className="mt-1 text-sm text-muted-foreground">{architecture[active].detail}</p></div></div>
+        <div><SectionHeading tag="Reference architecture" title="One Digital Thread. Five Connected Layers." text="Inspect each layer to see how we connect operational truth with enterprise context and applied intelligence." /><div className="mt-8 border-l-2 border-brand-orange pl-5"><p className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Active layer</p><p className="mt-2 font-display text-xl font-bold text-brand-navy">{architecture[active]?.name ?? "INTELLIGENCE"}</p><p className="mt-1 text-sm text-muted-foreground">{architecture[active]?.detail ?? "AI / Analytics / Digital Transformation"}</p></div></div>
         <motion.div {...reveal} className="space-y-2">
           {architecture.map((layer, i) => {
             const Icon = layer.icon;
