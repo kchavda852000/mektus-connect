@@ -22,6 +22,17 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  type TooltipProps,
+} from "recharts";
 
 import factoryVisual from "@/assets/mektus-connected-factory.png";
 import logoAsset from "@/assets/mektus-logo.jpeg.asset.json";
@@ -102,6 +113,15 @@ const industries = [
   "Process Manufacturing",
 ];
 
+const hourlyProduction = [
+  { time: "06:00", output: 112 }, { time: "07:00", output: 126 },
+  { time: "08:00", output: 119 }, { time: "09:00", output: 138 },
+  { time: "10:00", output: 132 }, { time: "11:00", output: 146 },
+  { time: "12:00", output: 151 }, { time: "13:00", output: 128 },
+  { time: "14:00", output: 154 }, { time: "15:00", output: 143 },
+  { time: "16:00", output: 158 }, { time: "17:00", output: 148 },
+];
+
 const reveal = {
   initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
@@ -155,11 +175,11 @@ function Header() {
         </Button>
       </div>
       {open && (
-        <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} className="fixed inset-0 z-50 bg-brand-navy px-6 py-5 lg:hidden">
+        <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} className="fixed inset-0 z-50 overflow-y-auto bg-brand-navy px-4 py-5 sm:px-6 lg:hidden">
           <div className="flex items-center justify-between"><Brand inverse /><Button variant="ghost" size="icon" className="text-brand-white hover:bg-brand-white/10" onClick={() => setOpen(false)} aria-label="Close menu"><X className="size-6" /></Button></div>
           <nav className="mt-16 flex flex-col" aria-label="Mobile navigation">
             {navItems.map(([label, href], index) => (
-              <a key={href} href={href} onClick={() => setOpen(false)} className="flex items-center justify-between border-b border-brand-white/10 py-5 font-display text-2xl font-bold text-brand-white">
+              <a key={href} href={href} onClick={() => setOpen(false)} className="flex min-h-14 items-center justify-between border-b border-brand-white/10 py-4 font-display text-xl font-bold text-brand-white sm:text-2xl">
                 <span><small className="mr-4 font-mono text-xs text-brand-orange">0{index + 1}</small>{label}</span><ChevronRight className="text-brand-orange" />
               </a>
             ))}
@@ -187,7 +207,7 @@ function Hero() {
     <section id="home" className="relative min-h-[760px] overflow-hidden bg-brand-navy pt-20 lg:min-h-[820px]">
       <div className="industrial-grid absolute inset-0 opacity-35" />
       <div className="absolute inset-x-0 bottom-0 h-px bg-brand-white/10" />
-      <div className="relative mx-auto grid min-h-[680px] max-w-7xl items-center px-5 py-16 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-12">
+      <div className="relative mx-auto grid max-w-7xl items-center px-4 py-12 sm:min-h-[680px] sm:px-6 sm:py-16 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-12">
         <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="relative z-10 max-w-2xl">
           <div className="mb-7 inline-flex items-center gap-3 border border-brand-white/15 bg-brand-white/5 px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-brand-white/70">
             <span className="signal-dot" /> Manufacturing Technology Consultancy
@@ -206,7 +226,7 @@ function Hero() {
             <span className="font-mono text-brand-orange">FACTORY TO INTELLIGENCE</span><span className="hidden h-px flex-1 bg-brand-white/10 sm:block" />
           </div>
         </motion.div>
-        <motion.div style={{ y: visualY }} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, duration: 1 }} className="relative -mx-20 mt-8 h-[340px] lg:-mr-28 lg:ml-[-8rem] lg:mt-0 lg:h-[660px]">
+        <motion.div style={{ y: visualY }} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, duration: 1 }} className="relative mt-6 h-[260px] min-w-0 sm:h-[380px] lg:-mr-20 lg:ml-[-6rem] lg:mt-0 lg:h-[660px]">
           <img src={factoryVisual} alt="Connected manufacturing shopfloor flowing into MES and AI intelligence" width={1600} height={1000} className="h-full w-full object-contain object-center" />
           <div className="absolute bottom-10 right-20 hidden border-l-2 border-brand-orange bg-brand-navy/80 px-4 py-3 backdrop-blur-md sm:block lg:right-28">
             <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-brand-white/45">Live signal path</span>
@@ -246,13 +266,13 @@ function Architecture() {
   const [active, setActive] = useState(0);
   return (
     <section id="architecture" className="bg-brand-light py-24 sm:py-28">
-      <div className="mx-auto grid max-w-7xl gap-14 px-5 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:gap-14 lg:px-8">
         <div><SectionHeading tag="Reference architecture" title="One Digital Thread. Five Connected Layers." text="Inspect each layer to see how we connect operational truth with enterprise context and applied intelligence." /><div className="mt-8 border-l-2 border-brand-orange pl-5"><p className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Active layer</p><p className="mt-2 font-display text-xl font-bold text-brand-navy">{architecture[active]?.name ?? "INTELLIGENCE"}</p><p className="mt-1 text-sm text-muted-foreground">{architecture[active]?.detail ?? "AI / Analytics / Digital Transformation"}</p></div></div>
-        <motion.div {...reveal} className="space-y-2">
+        <motion.div {...reveal} className="min-w-0 space-y-2">
           {architecture.map((layer, i) => {
             const Icon = layer.icon;
-            return <button key={layer.name} type="button" onMouseEnter={() => setActive(i)} onFocus={() => setActive(i)} onClick={() => setActive(i)} className={`architecture-layer grid w-full grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-4 border px-4 py-5 text-left transition-all sm:px-6 ${active === i ? "border-brand-orange bg-brand-navy text-brand-white shadow-architecture" : "border-brand-navy/12 bg-brand-white text-brand-navy hover:border-brand-orange"}`}>
-              <span className={`font-mono text-xs ${active === i ? "text-brand-orange" : "text-muted-foreground"}`}>{layer.level}</span><Icon className={`size-5 ${active === i ? "text-brand-orange" : "text-brand-navy"}`} /><span className="min-w-0"><strong className="block text-sm tracking-[0.08em]">{layer.name}</strong><small className={`mt-1 block truncate text-xs ${active === i ? "text-brand-white/55" : "text-muted-foreground"}`}>{layer.detail}</small></span><span className={`signal-dot ${active === i ? "opacity-100" : "opacity-30"}`} />
+            return <button key={layer.name} type="button" onMouseEnter={() => setActive(i)} onFocus={() => setActive(i)} onClick={() => setActive(i)} className={`architecture-layer grid w-full grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-3 border px-3 py-4 text-left transition-all sm:gap-4 sm:px-6 sm:py-5 ${active === i ? "border-brand-orange bg-brand-navy text-brand-white shadow-architecture" : "border-brand-navy/12 bg-brand-white text-brand-navy hover:border-brand-orange"}`}>
+              <span className={`font-mono text-[10px] sm:text-xs ${active === i ? "text-brand-orange" : "text-muted-foreground"}`}>{layer.level}</span><Icon className={`size-4 sm:size-5 ${active === i ? "text-brand-orange" : "text-brand-navy"}`} /><span className="min-w-0"><strong className="block text-xs sm:text-sm">{layer.name}</strong><small className={`mt-1 block text-[10px] leading-4 sm:text-xs ${active === i ? "text-brand-white/55" : "text-muted-foreground"}`}>{layer.detail}</small></span><span className={`signal-dot ${active === i ? "opacity-100" : "opacity-30"}`} />
             </button>;
           })}
         </motion.div>
