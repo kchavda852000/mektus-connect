@@ -35,7 +35,7 @@ import {
 } from "recharts";
 
 import factoryVisual from "@/assets/mektus-connected-factory.png";
-import logoAsset from "@/assets/mektus-logo.jpeg.asset.json";
+const LOGO_SRC = "/mektus-logo.jpeg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -133,7 +133,7 @@ function Brand({ inverse = false }: { inverse?: boolean }) {
   return (
     <a href="#home" className="flex min-w-0 items-center gap-3" aria-label="MEKTUS home">
       <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden bg-brand-light">
-        <img src={logoAsset.url} alt="" className="h-full w-full object-cover" width={48} height={48} />
+        <img src={LOGO_SRC} alt="MEKTUS Consultancy Solutions logo" className="h-full w-full object-cover" width={48} height={48} />
       </span>
       <span className="min-w-0 leading-none">
         <strong className={`block font-display text-base font-extrabold ${inverse ? "text-brand-white" : "text-brand-navy"}`}>MEKTUS</strong>
