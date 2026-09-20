@@ -68,12 +68,15 @@
   --brand-white: oklch(1 0 0);
   --dashboard: oklch(0.19 0.029 254);
   --status-good: oklch(0.76 0.12 125);
+  --chart-grid: oklch(1 0 0 / 10%);
+  --chart-axis: oklch(1 0 0 / 40%);
+  --chart-cursor: oklch(1 0 0 / 5%);
 }
 
 @layer base {
   * { border-color: var(--color-border); }
-  html { scroll-behavior: smooth; }
-  body { margin: 0; background: var(--color-background); color: var(--color-foreground); font-family: var(--font-sans); }
+  html { max-width: 100%; overflow-x: hidden; scroll-behavior: smooth; }
+  body { margin: 0; max-width: 100%; overflow-x: hidden; background: var(--color-background); color: var(--color-foreground); font-family: var(--font-sans); }
   button, a, input, textarea { letter-spacing: 0; }
   ::selection { background: var(--color-brand-orange); color: var(--color-brand-navy); }
 }

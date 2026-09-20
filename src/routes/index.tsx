@@ -22,6 +22,17 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  type TooltipProps,
+} from "recharts";
 
 import factoryVisual from "@/assets/mektus-connected-factory.png";
 import logoAsset from "@/assets/mektus-logo.jpeg.asset.json";
@@ -102,6 +113,15 @@ const industries = [
   "Process Manufacturing",
 ];
 
+const hourlyProduction = [
+  { time: "06:00", output: 112 }, { time: "07:00", output: 126 },
+  { time: "08:00", output: 119 }, { time: "09:00", output: 138 },
+  { time: "10:00", output: 132 }, { time: "11:00", output: 146 },
+  { time: "12:00", output: 151 }, { time: "13:00", output: 128 },
+  { time: "14:00", output: 154 }, { time: "15:00", output: 143 },
+  { time: "16:00", output: 158 }, { time: "17:00", output: 148 },
+];
+
 const reveal = {
   initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
@@ -155,11 +175,11 @@ function Header() {
         </Button>
       </div>
       {open && (
-        <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} className="fixed inset-0 z-50 bg-brand-navy px-6 py-5 lg:hidden">
+        <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} className="fixed inset-0 z-50 overflow-y-auto bg-brand-navy px-4 py-5 sm:px-6 lg:hidden">
           <div className="flex items-center justify-between"><Brand inverse /><Button variant="ghost" size="icon" className="text-brand-white hover:bg-brand-white/10" onClick={() => setOpen(false)} aria-label="Close menu"><X className="size-6" /></Button></div>
           <nav className="mt-16 flex flex-col" aria-label="Mobile navigation">
             {navItems.map(([label, href], index) => (
-              <a key={href} href={href} onClick={() => setOpen(false)} className="flex items-center justify-between border-b border-brand-white/10 py-5 font-display text-2xl font-bold text-brand-white">
+              <a key={href} href={href} onClick={() => setOpen(false)} className="flex min-h-14 items-center justify-between border-b border-brand-white/10 py-4 font-display text-xl font-bold text-brand-white sm:text-2xl">
                 <span><small className="mr-4 font-mono text-xs text-brand-orange">0{index + 1}</small>{label}</span><ChevronRight className="text-brand-orange" />
               </a>
             ))}
@@ -187,7 +207,7 @@ function Hero() {
     <section id="home" className="relative min-h-[760px] overflow-hidden bg-brand-navy pt-20 lg:min-h-[820px]">
       <div className="industrial-grid absolute inset-0 opacity-35" />
       <div className="absolute inset-x-0 bottom-0 h-px bg-brand-white/10" />
-      <div className="relative mx-auto grid min-h-[680px] max-w-7xl items-center px-5 py-16 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-12">
+      <div className="relative mx-auto grid max-w-7xl items-center px-4 py-12 sm:min-h-[680px] sm:px-6 sm:py-16 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-12">
         <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="relative z-10 max-w-2xl">
           <div className="mb-7 inline-flex items-center gap-3 border border-brand-white/15 bg-brand-white/5 px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-brand-white/70">
             <span className="signal-dot" /> Manufacturing Technology Consultancy
@@ -206,7 +226,7 @@ function Hero() {
             <span className="font-mono text-brand-orange">FACTORY TO INTELLIGENCE</span><span className="hidden h-px flex-1 bg-brand-white/10 sm:block" />
           </div>
         </motion.div>
-        <motion.div style={{ y: visualY }} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, duration: 1 }} className="relative -mx-20 mt-8 h-[340px] lg:-mr-28 lg:ml-[-8rem] lg:mt-0 lg:h-[660px]">
+        <motion.div style={{ y: visualY }} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, duration: 1 }} className="relative mt-6 h-[260px] min-w-0 sm:h-[380px] lg:-mr-20 lg:ml-[-6rem] lg:mt-0 lg:h-[660px]">
           <img src={factoryVisual} alt="Connected manufacturing shopfloor flowing into MES and AI intelligence" width={1600} height={1000} className="h-full w-full object-contain object-center" />
           <div className="absolute bottom-10 right-20 hidden border-l-2 border-brand-orange bg-brand-navy/80 px-4 py-3 backdrop-blur-md sm:block lg:right-28">
             <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-brand-white/45">Live signal path</span>
@@ -227,7 +247,7 @@ function ConnectedFlow() {
   const flow = ["Machines", "PLC / OT", "SCADA / HMI", "MES", "ERP", "AI / Analytics"];
   return (
     <section id="about" className="bg-background py-24 sm:py-28">
-      <div className="mx-auto max-w-7xl px-5 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading tag="The connected plant" title="Manufacturing is Connected. Your Systems Should Be Too." text="We create the digital thread that turns fragmented plant signals into trusted context, coordinated operations and faster decisions." />
         <motion.div {...reveal} className="mt-14 grid overflow-hidden border border-border bg-card sm:grid-cols-3 lg:grid-cols-6">
           {flow.map((item, i) => <div key={item} className="group relative flex min-h-36 flex-col justify-between border-b border-r border-border p-5 last:border-r-0 sm:[&:nth-child(n+4)]:border-b-0 lg:border-b-0">
@@ -246,13 +266,13 @@ function Architecture() {
   const [active, setActive] = useState(0);
   return (
     <section id="architecture" className="bg-brand-light py-24 sm:py-28">
-      <div className="mx-auto grid max-w-7xl gap-14 px-5 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:gap-14 lg:px-8">
         <div><SectionHeading tag="Reference architecture" title="One Digital Thread. Five Connected Layers." text="Inspect each layer to see how we connect operational truth with enterprise context and applied intelligence." /><div className="mt-8 border-l-2 border-brand-orange pl-5"><p className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Active layer</p><p className="mt-2 font-display text-xl font-bold text-brand-navy">{architecture[active]?.name ?? "INTELLIGENCE"}</p><p className="mt-1 text-sm text-muted-foreground">{architecture[active]?.detail ?? "AI / Analytics / Digital Transformation"}</p></div></div>
-        <motion.div {...reveal} className="space-y-2">
+        <motion.div {...reveal} className="min-w-0 space-y-2">
           {architecture.map((layer, i) => {
             const Icon = layer.icon;
-            return <button key={layer.name} type="button" onMouseEnter={() => setActive(i)} onFocus={() => setActive(i)} onClick={() => setActive(i)} className={`architecture-layer grid w-full grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-4 border px-4 py-5 text-left transition-all sm:px-6 ${active === i ? "border-brand-orange bg-brand-navy text-brand-white shadow-architecture" : "border-brand-navy/12 bg-brand-white text-brand-navy hover:border-brand-orange"}`}>
-              <span className={`font-mono text-xs ${active === i ? "text-brand-orange" : "text-muted-foreground"}`}>{layer.level}</span><Icon className={`size-5 ${active === i ? "text-brand-orange" : "text-brand-navy"}`} /><span className="min-w-0"><strong className="block text-sm tracking-[0.08em]">{layer.name}</strong><small className={`mt-1 block truncate text-xs ${active === i ? "text-brand-white/55" : "text-muted-foreground"}`}>{layer.detail}</small></span><span className={`signal-dot ${active === i ? "opacity-100" : "opacity-30"}`} />
+            return <button key={layer.name} type="button" onMouseEnter={() => setActive(i)} onFocus={() => setActive(i)} onClick={() => setActive(i)} className={`architecture-layer grid w-full grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-3 border px-3 py-4 text-left transition-all sm:gap-4 sm:px-6 sm:py-5 ${active === i ? "border-brand-orange bg-brand-navy text-brand-white shadow-architecture" : "border-brand-navy/12 bg-brand-white text-brand-navy hover:border-brand-orange"}`}>
+              <span className={`font-mono text-[10px] sm:text-xs ${active === i ? "text-brand-orange" : "text-muted-foreground"}`}>{layer.level}</span><Icon className={`size-4 sm:size-5 ${active === i ? "text-brand-orange" : "text-brand-navy"}`} /><span className="min-w-0"><strong className="block text-xs sm:text-sm">{layer.name}</strong><small className={`mt-1 block text-[10px] leading-4 sm:text-xs ${active === i ? "text-brand-white/55" : "text-muted-foreground"}`}>{layer.detail}</small></span><span className={`signal-dot ${active === i ? "opacity-100" : "opacity-30"}`} />
             </button>;
           })}
         </motion.div>
@@ -264,7 +284,7 @@ function Architecture() {
 function Solutions() {
   return (
     <section id="solutions" className="bg-background py-24 sm:py-28">
-      <div className="mx-auto max-w-7xl px-5 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading tag="Core solutions" title="What We Build" text="Manufacturing systems engineered to work in the reality of your plant—not isolated technology experiments." />
         <div className="mt-14 grid gap-px overflow-hidden border border-border bg-border md:grid-cols-2 lg:grid-cols-3">
           {solutions.map((solution, i) => { const Icon = solution.icon; return <motion.article {...reveal} key={solution.title} className="solution-card group min-h-72 bg-background p-7 transition-all duration-300 hover:z-10 hover:-translate-y-1 hover:shadow-card sm:p-8"><div className="flex items-start justify-between"><span className="font-mono text-xs font-bold text-brand-orange">{String(i + 1).padStart(2, "0")}</span><Icon className="size-7 text-brand-navy transition-colors group-hover:text-brand-orange" /></div><div className="mt-20"><h3 className="font-display text-xl font-bold text-brand-navy">{solution.title}</h3><p className="mt-3 text-sm leading-6 text-muted-foreground">{solution.text}</p></div><div className="mt-6 h-0.5 w-8 bg-brand-orange transition-all duration-300 group-hover:w-full" /></motion.article>; })}
@@ -277,21 +297,21 @@ function Solutions() {
 function Dashboard() {
   return (
     <section id="mes-ai" className="overflow-hidden bg-brand-navy py-24 sm:py-28">
-      <div className="mx-auto max-w-7xl px-5 lg:px-8">
-        <div className="grid gap-12 lg:grid-cols-[0.72fr_1.28fr] lg:items-center">
-          <div><SectionHeading light tag="MES + AI" title="From Production Data to Manufacturing Intelligence." text="A unified operating view helps teams understand performance, detect risk and act with confidence." /><ul className="mt-9 space-y-4">{["Real-time operational context", "AI-assisted anomaly detection", "Production, quality and downtime insight"].map(item => <li key={item} className="flex items-center gap-3 text-sm text-brand-white/75"><CheckCircle2 className="size-5 shrink-0 text-brand-orange" />{item}</li>)}</ul></div>
-          <motion.div {...reveal} className="dashboard-shell border border-brand-white/12 bg-dashboard p-3 shadow-dashboard sm:p-5">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid min-w-0 gap-12 lg:grid-cols-[0.72fr_1.28fr] lg:items-center">
+          <div className="min-w-0"><SectionHeading light tag="MES + AI" title="From Production Data to Manufacturing Intelligence." text="A unified operating view helps teams understand performance, detect risk and act with confidence." /><ul className="mt-9 space-y-4">{["Real-time operational context", "AI-assisted anomaly detection", "Production, quality and downtime insight"].map(item => <li key={item} className="flex items-center gap-3 text-sm text-brand-white/75"><CheckCircle2 className="size-5 shrink-0 text-brand-orange" />{item}</li>)}</ul></div>
+          <motion.div {...reveal} className="dashboard-shell min-w-0 overflow-hidden border border-brand-white/12 bg-dashboard p-3 shadow-dashboard sm:p-5">
             <div className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-brand-white/10 pb-4"><div className="min-w-0"><p className="truncate font-mono text-[10px] uppercase tracking-[0.16em] text-brand-white/40">Plant 01 · Live Operations</p><h3 className="mt-1 truncate font-display text-base font-bold text-brand-white">Manufacturing Intelligence</h3></div><span className="flex shrink-0 items-center gap-2 font-mono text-[10px] text-status-good"><span className="status-pulse" /> LIVE</span></div>
             <div className="grid gap-3 sm:grid-cols-3">
               <Metric label="OEE" value="88.4%" change="+3.2%" icon={Gauge} />
               <Metric label="Production Rate" value="142" suffix="u/hr" change="On target" icon={Activity} />
               <Metric label="Quality Index" value="99.2%" change="+0.6%" icon={ShieldCheck} />
             </div>
-            <div className="mt-3 grid gap-3 sm:grid-cols-[1.25fr_0.75fr]">
-              <div className="border border-brand-white/10 bg-brand-navy/45 p-4"><div className="flex items-center justify-between"><span className="font-mono text-[10px] uppercase text-brand-white/45">Hourly throughput</span><span className="text-xs text-brand-orange">Target 135</span></div><div className="mt-6 flex h-32 items-end gap-2">{[56,70,64,80,74,88,92,78,96,87,100,91].map((h,i)=><div key={i} className="flex-1 bg-brand-white/10"><motion.div initial={{height:0}} whileInView={{height:`${h}%`}} viewport={{once:true}} transition={{duration:.7,delay:i*.04}} className="w-full bg-brand-orange" /></div>)}</div><div className="mt-3 flex justify-between font-mono text-[9px] text-brand-white/30"><span>06:00</span><span>12:00</span><span>18:00</span></div></div>
+            <div className="mt-3 grid min-w-0 gap-3 md:grid-cols-[1.25fr_0.75fr]">
+              <div className="min-w-0 border border-brand-white/10 bg-brand-navy/45 p-3 sm:p-4"><div className="flex items-center justify-between gap-3"><span className="font-mono text-[10px] uppercase text-brand-white/45">Hourly throughput</span><span className="shrink-0 text-xs text-brand-orange">Target 135</span></div><div className="mt-4 h-[220px] w-full min-w-0 sm:h-[260px]"><ResponsiveContainer width="100%" height="100%"><BarChart data={hourlyProduction} margin={{ top: 10, right: 4, left: -24, bottom: 0 }}><CartesianGrid stroke="var(--chart-grid)" strokeDasharray="3 3" vertical={false} /><XAxis dataKey="time" stroke="var(--chart-axis)" tickLine={false} axisLine={false} tick={{ fontSize: 9 }} interval="preserveStartEnd" /><YAxis stroke="var(--chart-axis)" tickLine={false} axisLine={false} tick={{ fontSize: 9 }} domain={[0, 180]} /><Tooltip content={<ThroughputTooltip />} cursor={{ fill: "var(--chart-cursor)" }} /><ReferenceLine y={135} stroke="var(--brand-orange)" strokeDasharray="4 4" /><Bar dataKey="output" name="Output" fill="var(--brand-orange)" radius={[2, 2, 0, 0]} maxBarSize={24} /></BarChart></ResponsiveContainer></div></div>
               <div className="border border-brand-white/10 bg-brand-navy/45 p-4"><span className="font-mono text-[10px] uppercase text-brand-white/45">Machine status</span><div className="mt-5 space-y-4">{[["Running", "12", "bg-status-good"],["Idle", "2", "bg-brand-orange"],["Down", "1", "bg-destructive"]].map(([a,b,c])=><div key={a} className="grid grid-cols-[auto_1fr_auto] items-center gap-3 text-xs text-brand-white/70"><span className={`size-2 ${c}`} /><span>{a}</span><strong className="text-brand-white">{b}</strong></div>)}</div><div className="mt-6 border-t border-brand-white/10 pt-4"><span className="font-mono text-[10px] uppercase text-brand-white/45">Downtime</span><strong className="mt-2 block text-2xl text-brand-white">00:24:18</strong></div></div>
             </div>
-            <div className="mt-3 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border border-brand-orange/35 bg-brand-orange/8 p-4"><BrainCircuit className="size-5 shrink-0 text-brand-orange" /><div className="min-w-0"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-brand-orange">AI anomaly detection</p><p className="mt-1 truncate text-xs text-brand-white/75">Spindle vibration pattern outside expected range · CNC-04</p></div><span className="hidden text-xs font-bold text-brand-orange sm:block">Review</span></div>
+            <div className="mt-3 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 border border-brand-orange/35 bg-brand-orange/8 p-4 sm:grid-cols-[auto_minmax(0,1fr)_auto]"><BrainCircuit className="size-5 shrink-0 text-brand-orange" /><div className="min-w-0"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-brand-orange">AI anomaly detection</p><p className="mt-1 text-xs leading-5 text-brand-white/75">Spindle vibration pattern outside expected range · CNC-04</p></div><span className="hidden text-xs font-bold text-brand-orange sm:block">Review</span></div>
             <p className="mt-4 text-center font-mono text-[9px] uppercase tracking-[0.14em] text-brand-white/30">Illustrative Manufacturing Intelligence Dashboard</p>
           </motion.div>
         </div>
@@ -300,19 +320,24 @@ function Dashboard() {
   );
 }
 
+function ThroughputTooltip({ active, payload, label }: TooltipProps<number, string>) {
+  if (!active || !payload?.length) return null;
+  return <div className="border border-brand-orange/40 bg-brand-navy px-3 py-2 shadow-dashboard"><p className="font-mono text-[9px] text-brand-white/45">{label}</p><p className="mt-1 text-xs font-bold text-brand-white">{payload[0]?.value} units/hour</p></div>;
+}
+
 function Metric({ label, value, suffix, change, icon: Icon }: { label:string; value:string; suffix?:string; change:string; icon:typeof Gauge }) {
   return <div className="border border-brand-white/10 bg-brand-navy/45 p-4"><div className="flex items-center justify-between"><span className="font-mono text-[9px] uppercase tracking-[0.1em] text-brand-white/40">{label}</span><Icon className="size-4 text-brand-orange" /></div><strong className="mt-5 block text-2xl text-brand-white sm:text-3xl">{value} <small className="text-xs font-normal text-brand-white/40">{suffix}</small></strong><span className="mt-2 block text-[10px] text-status-good">{change}</span></div>;
 }
 
 function Industries() {
-  return <section id="industries" className="bg-brand-light py-24 sm:py-28"><div className="mx-auto max-w-7xl px-5 lg:px-8"><SectionHeading tag="Industry expertise" title="Built for Manufacturing Reality." text="We combine technology depth with the process, validation and operational demands of complex industries." /><div className="mt-14 grid gap-px overflow-hidden border border-brand-navy/10 bg-brand-navy/10 sm:grid-cols-2 lg:grid-cols-3">{industries.map((name,i)=><motion.div {...reveal} key={name} className="group flex min-h-36 items-end justify-between bg-brand-light p-6 transition-colors hover:bg-brand-navy"><div><span className="font-mono text-[10px] text-brand-orange">0{i+1}</span><h3 className="mt-5 font-display text-lg font-bold text-brand-navy group-hover:text-brand-white">{name}</h3></div><ArrowRight className="size-5 text-brand-orange" /></motion.div>)}</div></div></section>;
+  return <section id="industries" className="bg-brand-light py-24 sm:py-28"><div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"><SectionHeading tag="Industry expertise" title="Built for Manufacturing Reality." text="We combine technology depth with the process, validation and operational demands of complex industries." /><div className="mt-14 grid gap-px overflow-hidden border border-brand-navy/10 bg-brand-navy/10 sm:grid-cols-2 lg:grid-cols-3">{industries.map((name,i)=><motion.div {...reveal} key={name} className="group flex min-h-36 items-end justify-between bg-brand-light p-6 transition-colors hover:bg-brand-navy"><div><span className="font-mono text-[10px] text-brand-orange">0{i+1}</span><h3 className="mt-5 font-display text-lg font-bold text-brand-navy group-hover:text-brand-white">{name}</h3></div><ArrowRight className="size-5 text-brand-orange" /></motion.div>)}</div></div></section>;
 }
 
 function Contact() {
   const [sent, setSent] = useState(false);
   const submit = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); if (event.currentTarget.reportValidity()) setSent(true); };
   const fieldClass = "h-12 rounded-none border-brand-navy/15 bg-brand-white px-4 shadow-none focus-visible:ring-brand-orange";
-  return <section id="contact" className="bg-background py-24 sm:py-28"><div className="mx-auto grid max-w-7xl gap-14 px-5 lg:grid-cols-[0.7fr_1.3fr] lg:px-8"><div><SectionHeading tag="Start a conversation" title="Let’s Connect Your Manufacturing Future." text="Tell us where your plant is today and what you need to make possible next." /><div className="mt-10 space-y-6 border-t border-border pt-8"><div><span className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Our approach</span><p className="mt-2 text-sm leading-6 text-brand-navy">Discover the operation. Map the architecture. Deliver measurable manufacturing value.</p></div><div className="flex items-center gap-3 text-sm font-semibold text-brand-navy"><span className="grid size-9 place-items-center bg-brand-orange"><Factory className="size-4" /></span>Physical factory to digital intelligence</div></div></div>
+  return <section id="contact" className="bg-background py-24 sm:py-28"><div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-[0.7fr_1.3fr] lg:gap-14 lg:px-8"><div><SectionHeading tag="Start a conversation" title="Let’s Connect Your Manufacturing Future." text="Tell us where your plant is today and what you need to make possible next." /><div className="mt-10 space-y-6 border-t border-border pt-8"><div><span className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Our approach</span><p className="mt-2 text-sm leading-6 text-brand-navy">Discover the operation. Map the architecture. Deliver measurable manufacturing value.</p></div><div className="flex items-center gap-3 text-sm font-semibold text-brand-navy"><span className="grid size-9 place-items-center bg-brand-orange"><Factory className="size-4" /></span>Physical factory to digital intelligence</div></div></div>
     <motion.div {...reveal} className="border border-border bg-brand-light p-5 sm:p-8">{sent ? <div className="grid min-h-[480px] place-items-center text-center"><div><span className="mx-auto grid size-16 place-items-center bg-brand-orange"><CheckCircle2 className="size-7 text-brand-navy" /></span><h3 className="mt-6 font-display text-2xl font-bold text-brand-navy">Inquiry received.</h3><p className="mt-3 max-w-sm text-sm leading-6 text-muted-foreground">Thank you. A MEKTUS manufacturing technology expert will connect with you shortly.</p></div></div> : <form onSubmit={submit} className="grid gap-5 sm:grid-cols-2"><Field label="Name"><Input required maxLength={100} name="name" autoComplete="name" className={fieldClass} placeholder="Your name" /></Field><Field label="Company"><Input required maxLength={120} name="company" autoComplete="organization" className={fieldClass} placeholder="Company name" /></Field><Field label="Work Email"><Input required maxLength={255} type="email" name="email" autoComplete="email" className={fieldClass} placeholder="name@company.com" /></Field><Field label="Phone"><Input maxLength={30} type="tel" name="phone" autoComplete="tel" className={fieldClass} placeholder="+00 000 000 0000" /></Field><Field label="Industry"><Select required name="industry"><SelectTrigger className={fieldClass}><SelectValue placeholder="Select industry" /></SelectTrigger><SelectContent>{industries.map(x=><SelectItem key={x} value={x}>{x}</SelectItem>)}</SelectContent></Select></Field><Field label="Area of Interest"><Select required name="interest"><SelectTrigger className={fieldClass}><SelectValue placeholder="Select solution" /></SelectTrigger><SelectContent>{capabilities.map(x=><SelectItem key={x} value={x}>{x}</SelectItem>)}</SelectContent></Select></Field><Field label="Message" wide><Textarea required minLength={10} maxLength={1500} name="message" className="min-h-36 rounded-none border-brand-navy/15 bg-brand-white p-4 shadow-none focus-visible:ring-brand-orange" placeholder="Tell us about your manufacturing challenge, current systems and goals." /></Field><div className="sm:col-span-2"><Button type="submit" className="h-13 w-full rounded-none bg-brand-orange px-8 font-bold text-brand-navy shadow-none hover:bg-brand-orange-bright sm:w-auto">Send Inquiry <Send /></Button></div></form>}</motion.div></div></section>;
 }
 
@@ -323,5 +348,5 @@ function Footer() {
 }
 
 function HomePage() {
-  return <main className="overflow-x-clip"><Header /><Hero /><Marquee /><ConnectedFlow /><Architecture /><Solutions /><Dashboard /><Industries /><Contact /><Footer /></main>;
+  return <main className="w-full min-w-0 overflow-x-hidden"><Header /><Hero /><Marquee /><ConnectedFlow /><Architecture /><Solutions /><Dashboard /><Industries /><Contact /><Footer /></main>;
 }
