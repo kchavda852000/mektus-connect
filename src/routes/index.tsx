@@ -297,27 +297,32 @@ function Solutions() {
 function Dashboard() {
   return (
     <section id="mes-ai" className="overflow-hidden bg-brand-navy py-24 sm:py-28">
-      <div className="mx-auto max-w-7xl px-5 lg:px-8">
-        <div className="grid gap-12 lg:grid-cols-[0.72fr_1.28fr] lg:items-center">
-          <div><SectionHeading light tag="MES + AI" title="From Production Data to Manufacturing Intelligence." text="A unified operating view helps teams understand performance, detect risk and act with confidence." /><ul className="mt-9 space-y-4">{["Real-time operational context", "AI-assisted anomaly detection", "Production, quality and downtime insight"].map(item => <li key={item} className="flex items-center gap-3 text-sm text-brand-white/75"><CheckCircle2 className="size-5 shrink-0 text-brand-orange" />{item}</li>)}</ul></div>
-          <motion.div {...reveal} className="dashboard-shell border border-brand-white/12 bg-dashboard p-3 shadow-dashboard sm:p-5">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid min-w-0 gap-12 lg:grid-cols-[0.72fr_1.28fr] lg:items-center">
+          <div className="min-w-0"><SectionHeading light tag="MES + AI" title="From Production Data to Manufacturing Intelligence." text="A unified operating view helps teams understand performance, detect risk and act with confidence." /><ul className="mt-9 space-y-4">{["Real-time operational context", "AI-assisted anomaly detection", "Production, quality and downtime insight"].map(item => <li key={item} className="flex items-center gap-3 text-sm text-brand-white/75"><CheckCircle2 className="size-5 shrink-0 text-brand-orange" />{item}</li>)}</ul></div>
+          <motion.div {...reveal} className="dashboard-shell min-w-0 overflow-hidden border border-brand-white/12 bg-dashboard p-3 shadow-dashboard sm:p-5">
             <div className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-brand-white/10 pb-4"><div className="min-w-0"><p className="truncate font-mono text-[10px] uppercase tracking-[0.16em] text-brand-white/40">Plant 01 · Live Operations</p><h3 className="mt-1 truncate font-display text-base font-bold text-brand-white">Manufacturing Intelligence</h3></div><span className="flex shrink-0 items-center gap-2 font-mono text-[10px] text-status-good"><span className="status-pulse" /> LIVE</span></div>
             <div className="grid gap-3 sm:grid-cols-3">
               <Metric label="OEE" value="88.4%" change="+3.2%" icon={Gauge} />
               <Metric label="Production Rate" value="142" suffix="u/hr" change="On target" icon={Activity} />
               <Metric label="Quality Index" value="99.2%" change="+0.6%" icon={ShieldCheck} />
             </div>
-            <div className="mt-3 grid gap-3 sm:grid-cols-[1.25fr_0.75fr]">
-              <div className="border border-brand-white/10 bg-brand-navy/45 p-4"><div className="flex items-center justify-between"><span className="font-mono text-[10px] uppercase text-brand-white/45">Hourly throughput</span><span className="text-xs text-brand-orange">Target 135</span></div><div className="mt-6 flex h-32 items-end gap-2">{[56,70,64,80,74,88,92,78,96,87,100,91].map((h,i)=><div key={i} className="flex-1 bg-brand-white/10"><motion.div initial={{height:0}} whileInView={{height:`${h}%`}} viewport={{once:true}} transition={{duration:.7,delay:i*.04}} className="w-full bg-brand-orange" /></div>)}</div><div className="mt-3 flex justify-between font-mono text-[9px] text-brand-white/30"><span>06:00</span><span>12:00</span><span>18:00</span></div></div>
+            <div className="mt-3 grid min-w-0 gap-3 md:grid-cols-[1.25fr_0.75fr]">
+              <div className="min-w-0 border border-brand-white/10 bg-brand-navy/45 p-3 sm:p-4"><div className="flex items-center justify-between gap-3"><span className="font-mono text-[10px] uppercase text-brand-white/45">Hourly throughput</span><span className="shrink-0 text-xs text-brand-orange">Target 135</span></div><div className="mt-4 h-[220px] w-full min-w-0 sm:h-[260px]"><ResponsiveContainer width="100%" height="100%"><BarChart data={hourlyProduction} margin={{ top: 10, right: 4, left: -24, bottom: 0 }}><CartesianGrid stroke="var(--chart-grid)" strokeDasharray="3 3" vertical={false} /><XAxis dataKey="time" stroke="var(--chart-axis)" tickLine={false} axisLine={false} tick={{ fontSize: 9 }} interval="preserveStartEnd" /><YAxis stroke="var(--chart-axis)" tickLine={false} axisLine={false} tick={{ fontSize: 9 }} domain={[0, 180]} /><Tooltip content={<ThroughputTooltip />} cursor={{ fill: "var(--chart-cursor)" }} /><ReferenceLine y={135} stroke="var(--brand-orange)" strokeDasharray="4 4" /><Bar dataKey="output" name="Output" fill="var(--brand-orange)" radius={[2, 2, 0, 0]} maxBarSize={24} /></BarChart></ResponsiveContainer></div></div>
               <div className="border border-brand-white/10 bg-brand-navy/45 p-4"><span className="font-mono text-[10px] uppercase text-brand-white/45">Machine status</span><div className="mt-5 space-y-4">{[["Running", "12", "bg-status-good"],["Idle", "2", "bg-brand-orange"],["Down", "1", "bg-destructive"]].map(([a,b,c])=><div key={a} className="grid grid-cols-[auto_1fr_auto] items-center gap-3 text-xs text-brand-white/70"><span className={`size-2 ${c}`} /><span>{a}</span><strong className="text-brand-white">{b}</strong></div>)}</div><div className="mt-6 border-t border-brand-white/10 pt-4"><span className="font-mono text-[10px] uppercase text-brand-white/45">Downtime</span><strong className="mt-2 block text-2xl text-brand-white">00:24:18</strong></div></div>
             </div>
-            <div className="mt-3 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border border-brand-orange/35 bg-brand-orange/8 p-4"><BrainCircuit className="size-5 shrink-0 text-brand-orange" /><div className="min-w-0"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-brand-orange">AI anomaly detection</p><p className="mt-1 truncate text-xs text-brand-white/75">Spindle vibration pattern outside expected range · CNC-04</p></div><span className="hidden text-xs font-bold text-brand-orange sm:block">Review</span></div>
+            <div className="mt-3 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 border border-brand-orange/35 bg-brand-orange/8 p-4 sm:grid-cols-[auto_minmax(0,1fr)_auto]"><BrainCircuit className="size-5 shrink-0 text-brand-orange" /><div className="min-w-0"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-brand-orange">AI anomaly detection</p><p className="mt-1 text-xs leading-5 text-brand-white/75">Spindle vibration pattern outside expected range · CNC-04</p></div><span className="hidden text-xs font-bold text-brand-orange sm:block">Review</span></div>
             <p className="mt-4 text-center font-mono text-[9px] uppercase tracking-[0.14em] text-brand-white/30">Illustrative Manufacturing Intelligence Dashboard</p>
           </motion.div>
         </div>
       </div>
     </section>
   );
+}
+
+function ThroughputTooltip({ active, payload, label }: TooltipProps<number, string>) {
+  if (!active || !payload?.length) return null;
+  return <div className="border border-brand-orange/40 bg-brand-navy px-3 py-2 shadow-dashboard"><p className="font-mono text-[9px] text-brand-white/45">{label}</p><p className="mt-1 text-xs font-bold text-brand-white">{payload[0]?.value} units/hour</p></div>;
 }
 
 function Metric({ label, value, suffix, change, icon: Icon }: { label:string; value:string; suffix?:string; change:string; icon:typeof Gauge }) {
@@ -343,5 +348,5 @@ function Footer() {
 }
 
 function HomePage() {
-  return <main className="overflow-x-clip"><Header /><Hero /><Marquee /><ConnectedFlow /><Architecture /><Solutions /><Dashboard /><Industries /><Contact /><Footer /></main>;
+  return <main className="w-full min-w-0 overflow-x-hidden"><Header /><Hero /><Marquee /><ConnectedFlow /><Architecture /><Solutions /><Dashboard /><Industries /><Contact /><Footer /></main>;
 }
