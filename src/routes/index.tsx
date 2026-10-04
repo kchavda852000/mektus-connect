@@ -21,7 +21,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   Bar,
   BarChart,
@@ -35,6 +35,12 @@ import {
 } from "recharts";
 
 import factoryVisual from "@/assets/mektus-connected-factory.png";
+import pharmaVisual from "@/assets/industry-pharma.jpg";
+import automotiveVisual from "@/assets/industry-automotive.jpg";
+import chemicalVisual from "@/assets/industry-chemical.jpg";
+import grindingVisual from "@/assets/industry-grinding.jpg";
+import oilGasVisual from "@/assets/industry-oil-gas.jpg";
+import discreteVisual from "@/assets/industry-discrete.jpg";
 const LOGO_SRC = "/mektus-logo.jpeg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -104,14 +110,46 @@ const solutions = [
   { title: "Industry 4.0 Solutions", text: "Practical transformation roadmaps grounded in assets, people and process.", icon: Zap },
 ];
 
-const industries = [
-  "Pharmaceutical",
-  "Automotive",
-  "Chemical",
-  "Grinding Media",
-  "Oil & Gas",
-  "Process Manufacturing",
-];
+const industryDetails = [
+  {
+    name: "Pharmaceutical Manufacturing", short: "Pharmaceutical", image: pharmaVisual, imageAlt: "Sterile pharmaceutical filling and inspection line in a cleanroom", code: "PHARMA / 01",
+    challenge: "Maintain complete, reviewable batch evidence while connecting validated production and cleanroom data to quality decisions.",
+    solution: "An MES workflow linking electronic batch records, cleanroom sensors, serial genealogy and QA disposition with controlled electronic signatures.",
+    deliverables: ["Electronic Batch Records (EBR)", "21 CFR Part 11-aligned audit trails & electronic signatures", "Serial genealogy & cleanroom sensor integration", "Real-time QA hold / release workflows"],
+  },
+  {
+    name: "Automotive & Component Assembly", short: "Automotive", image: automotiveVisual, imageAlt: "Robotic automotive chassis assembly cell", code: "ASSEMBLY / 02",
+    challenge: "Keep pace with the line while preserving traceability for every fitted component, tool result and inspection decision.",
+    solution: "A connected assembly execution layer joins VIN and chassis genealogy with torque tools, inline inspection and line performance signals.",
+    deliverables: ["End-to-end VIN & chassis component genealogy", "Torque and tool data capture", "Automated inline inspection & Poka-Yoke error-proofing", "Real-time line-speed & OEE tracking"],
+  },
+  {
+    name: "Chemical & Process Plants", short: "Chemical", image: chemicalVisual, imageAlt: "Stainless steel chemical reactors, piping and instrumentation", code: "PROCESS / 03",
+    challenge: "Bring recipe execution, continuous process conditions and material accountability into one operational view.",
+    solution: "A process-aware MES and OT integration layer contextualizes reactor telemetry and historian records against batches, materials and yield.",
+    deliverables: ["Batch recipe management", "Continuous reactor telemetry", "Process historian integration", "Hazardous material handling logs", "Dynamic yield optimization"],
+  },
+  {
+    name: "Grinding Media Manufacturing", short: "Grinding Media", image: grindingVisual, imageAlt: "Forged grinding media steel balls near a heat treatment furnace and quench line", code: "METALS / 04",
+    challenge: "Trace thermal history and material properties from furnace cycle through quench, finished lot and in-service wear.",
+    solution: "A lot-centric manufacturing data thread connects furnace and quench signals with hardness results and consumable performance analytics.",
+    deliverables: ["High-temperature furnace monitoring", "Quenching cycle logs", "Batch-to-lot hardness & metallurgical traceability", "Consumable wear-rate predictive analytics"],
+  },
+  {
+    name: "Oil & Gas Infrastructure", short: "Oil & Gas", image: oilGasVisual, imageAlt: "Oil and gas refinery with pipelines, processing towers and instrumentation", code: "ENERGY / 05",
+    challenge: "Unify distributed operational signals without losing visibility of asset condition or hazardous-environment requirements.",
+    solution: "A secure SCADA-to-cloud bridge and edge dashboards bring remote telemetry into asset diagnostics and operational review.",
+    deliverables: ["Remote asset telemetry", "SCADA-to-cloud bridge", "Edge operational dashboards", "Pump & compressor health diagnostics", "Hazardous environment compliance workflows"],
+  },
+  {
+    name: "General & Discrete Manufacturing", short: "Discrete Manufacturing", image: discreteVisual, imageAlt: "Connected CNC shopfloor with digital machine operator terminals", code: "SHOPFLOOR / 06",
+    challenge: "Replace fragmented paper instructions and manual status updates with timely, actionable shopfloor information.",
+    solution: "A paperless execution layer connects operator terminals and CNC assets to instructions, downtime events and inventory movements.",
+    deliverables: ["Paperless shopfloor digitization", "Digital work instructions (SOPs)", "Real-time machine status & downtime tracking", "Tool crib & inventory management"],
+  },
+] as const;
+
+const industries = industryDetails.map((industry) => industry.name);
 
 const hourlyProduction = [
   { time: "06:00", output: 112 }, { time: "07:00", output: 126 },
@@ -330,7 +368,59 @@ function Metric({ label, value, suffix, change, icon: Icon }: { label:string; va
 }
 
 function Industries() {
-  return <section id="industries" className="bg-brand-light py-24 sm:py-28"><div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"><SectionHeading tag="Industry expertise" title="Built for Manufacturing Reality." text="We combine technology depth with the process, validation and operational demands of complex industries." /><div className="mt-14 grid gap-px overflow-hidden border border-brand-navy/10 bg-brand-navy/10 sm:grid-cols-2 lg:grid-cols-3">{industries.map((name,i)=><motion.div {...reveal} key={name} className="group flex min-h-36 items-end justify-between bg-brand-light p-6 transition-colors hover:bg-brand-navy"><div><span className="font-mono text-[10px] text-brand-orange">0{i+1}</span><h3 className="mt-5 font-display text-lg font-bold text-brand-navy group-hover:text-brand-white">{name}</h3></div><ArrowRight className="size-5 text-brand-orange" /></motion.div>)}</div></div></section>;
+  const [active, setActive] = useState(0);
+  const detailRef = useRef<HTMLDivElement>(null);
+  const selected = industryDetails[active];
+  const selectIndustry = (index: number) => {
+    setActive(index);
+    if (window.matchMedia("(max-width: 639px)").matches) {
+      window.setTimeout(() => detailRef.current?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" }), 50);
+    }
+  };
+
+  return (
+    <section id="industries" className="bg-brand-light py-20 sm:py-28">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <SectionHeading tag="Industry expertise" title="Built for Manufacturing Reality." text="We connect the systems, signals and decisions that matter in each production environment." />
+        <div className="mt-10 grid min-w-0 gap-3 sm:mt-14 sm:grid-cols-2 lg:grid-cols-3" aria-label="Explore industries">
+          {industryDetails.map((industry, i) => (
+            <motion.div {...reveal} key={industry.name} className="min-w-0">
+              <Button
+                type="button"
+                variant="ghost"
+                aria-pressed={active === i}
+                aria-controls="industry-detail"
+                onClick={() => selectIndustry(i)}
+                className={`group relative block h-auto w-full overflow-hidden rounded-none border p-0 text-left shadow-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-brand-orange ${active === i ? "border-brand-orange bg-brand-navy" : "border-brand-navy/15 bg-brand-navy hover:border-brand-orange"}`}
+              >
+                <span className="relative block aspect-[1.65] w-full overflow-hidden">
+                  <img src={industry.image} alt={industry.imageAlt} width={1200} height={800} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <span className="absolute inset-0 bg-brand-navy/15" />
+                  <span className="absolute left-4 top-4 border border-brand-white/30 bg-brand-navy/85 px-2 py-1 font-mono text-[10px] text-brand-white backdrop-blur-sm">{industry.code}</span>
+                </span>
+                <span className="flex min-h-20 items-center justify-between gap-3 px-4 py-4 sm:px-5">
+                  <span className="min-w-0 whitespace-normal font-display text-base font-bold leading-snug text-brand-white sm:text-lg">{industry.name}</span>
+                  <ArrowRight className={`size-5 shrink-0 text-brand-orange transition-transform ${active === i ? "rotate-90" : "group-hover:translate-x-1"}`} />
+                </span>
+                <span className={`absolute inset-x-0 bottom-0 h-1 bg-brand-orange transition-opacity ${active === i ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`} />
+              </Button>
+            </motion.div>
+          ))}
+        </div>
+        <div ref={detailRef} id="industry-detail" className="mt-5 scroll-mt-24 border-l-4 border-brand-orange bg-brand-navy p-5 text-brand-white sm:p-8 lg:p-10" aria-live="polite">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-brand-white/15 pb-5">
+            <span className="font-mono text-[10px] font-bold uppercase text-brand-orange">{selected.code}</span>
+            <h3 className="font-display text-xl font-bold sm:text-2xl">{selected.name}</h3>
+          </div>
+          <div className="grid gap-8 pt-7 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.2fr] lg:gap-10">
+            <div><h4 className="font-mono text-[10px] font-bold uppercase text-brand-orange">The challenge</h4><p className="mt-3 text-sm leading-7 text-brand-white/75">{selected.challenge}</p></div>
+            <div><h4 className="font-mono text-[10px] font-bold uppercase text-brand-orange">MEKTUS MES / OT approach</h4><p className="mt-3 text-sm leading-7 text-brand-white/75">{selected.solution}</p></div>
+            <div className="sm:col-span-2 lg:col-span-1"><h4 className="font-mono text-[10px] font-bold uppercase text-brand-orange">Project deliverables</h4><ul className="mt-3 space-y-2">{selected.deliverables.map((item) => <li key={item} className="flex items-start gap-3 text-sm leading-6 text-brand-white/85"><span className="mt-2 size-1.5 shrink-0 bg-brand-orange" />{item}</li>)}</ul></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function Contact() {
