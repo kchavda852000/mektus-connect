@@ -41,6 +41,12 @@ import chemicalVisual from "@/assets/industry-chemical.jpg";
 import grindingVisual from "@/assets/industry-grinding.jpg";
 import oilGasVisual from "@/assets/industry-oil-gas.jpg";
 import discreteVisual from "@/assets/industry-discrete.jpg";
+import mesVisual from "@/assets/solution-mes.jpg";
+import integrationVisual from "@/assets/solution-ot-it.jpg";
+import aiVisual from "@/assets/solution-ai.jpg";
+import shopfloorVisual from "@/assets/solution-shopfloor.jpg";
+import analyticsVisual from "@/assets/solution-analytics.jpg";
+import industry40Visual from "@/assets/solution-industry40.jpg";
 const LOGO_SRC = "/mektus-logo.jpeg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -102,12 +108,12 @@ const architecture = [
 ];
 
 const solutions = [
-  { title: "MES Development", text: "Production, quality, inventory and genealogy workflows engineered around your plant.", icon: Layers3 },
-  { title: "OT/IT Integration", text: "A secure, contextual data path from controls and SCADA through enterprise systems.", icon: Network },
-  { title: "Industrial AI", text: "Applied intelligence for anomalies, yield, maintenance and operational decisions.", icon: BrainCircuit },
-  { title: "Shopfloor Digitization", text: "Connected workstations, guided operations and real-time production visibility.", icon: Factory },
-  { title: "Manufacturing Analytics", text: "Trusted KPIs and actionable insight across lines, plants and the enterprise.", icon: BarChart3 },
-  { title: "Industry 4.0 Solutions", text: "Practical transformation roadmaps grounded in assets, people and process.", icon: Zap },
+  { title: "MES Development", text: "Production, quality, inventory and genealogy workflows engineered around your plant.", icon: Layers3, image: mesVisual, alt: "Isometric production line linked to manufacturing execution screens", flow: ["Shopfloor", "MES", "ERP"], detail: "Connect production events, quality checks and material movements in a traceable execution record." },
+  { title: "OT/IT Integration", text: "A secure, contextual data path from controls and SCADA through enterprise systems.", icon: Network, image: integrationVisual, alt: "Isometric PLC, SCADA and server architecture connected by orange signals", flow: ["PLC / OT", "SCADA", "IT"], detail: "Bridge controls, plant supervision and enterprise applications with a contextual operational data path." },
+  { title: "Industrial AI", text: "Applied intelligence for anomalies, yield, maintenance and operational decisions.", icon: BrainCircuit, image: aiVisual, alt: "Industrial pump with sensor signals and anomaly-monitoring panels", flow: ["Sensors", "Data", "AI"], detail: "Turn equipment signals and production history into actionable anomaly and maintenance insights." },
+  { title: "Shopfloor Digitization", text: "Connected workstations, guided operations and real-time production visibility.", icon: Factory, image: shopfloorVisual, alt: "Isometric CNC workstation with digital operator terminal", flow: ["Machine", "Operator", "MES"], detail: "Replace paper handoffs with digital work instructions, operator capture and live machine status." },
+  { title: "Manufacturing Analytics", text: "Trusted KPIs and actionable insight across lines, plants and the enterprise.", icon: BarChart3, image: analyticsVisual, alt: "Production line connected to operational analytics panels", flow: ["Events", "KPIs", "Action"], detail: "Unify line and plant events into production, quality and downtime views that support decisions." },
+  { title: "Industry 4.0 Solutions", text: "Practical transformation roadmaps grounded in assets, people and process.", icon: Zap, image: industry40Visual, alt: "Connected factory cells and data center in an isometric plant architecture", flow: ["Assets", "Systems", "Insight"], detail: "Map a practical path from connected assets to coordinated operations and manufacturing intelligence." },
 ];
 
 const industryDetails = [
@@ -320,13 +326,42 @@ function Architecture() {
 }
 
 function Solutions() {
+  const [active, setActive] = useState<number | null>(null);
+  const detailRef = useRef<HTMLDivElement>(null);
+  const selected = active === null ? null : solutions[active];
+  const selectSolution = (index: number) => {
+    if (active === index) { setActive(null); return; }
+    setActive(index);
+    window.setTimeout(() => detailRef.current?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "center" }), 80);
+  };
   return (
     <section id="solutions" className="bg-background py-24 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading tag="Core solutions" title="What We Build" text="Manufacturing systems engineered to work in the reality of your plant—not isolated technology experiments." />
-        <div className="mt-14 grid gap-px overflow-hidden border border-border bg-border md:grid-cols-2 lg:grid-cols-3">
-          {solutions.map((solution, i) => { const Icon = solution.icon; return <motion.article {...reveal} key={solution.title} className="solution-card group min-h-72 bg-background p-7 transition-all duration-300 hover:z-10 hover:-translate-y-1 hover:shadow-card sm:p-8"><div className="flex items-start justify-between"><span className="font-mono text-xs font-bold text-brand-orange">{String(i + 1).padStart(2, "0")}</span><Icon className="size-7 text-brand-navy transition-colors group-hover:text-brand-orange" /></div><div className="mt-20"><h3 className="font-display text-xl font-bold text-brand-navy">{solution.title}</h3><p className="mt-3 text-sm leading-6 text-muted-foreground">{solution.text}</p></div><div className="mt-6 h-0.5 w-8 bg-brand-orange transition-all duration-300 group-hover:w-full" /></motion.article>; })}
+        <div className="mt-12 grid gap-4 sm:mt-14 md:grid-cols-2 lg:grid-cols-3">
+          {solutions.map((solution, i) => { const Icon = solution.icon; return (
+            <motion.article {...reveal} key={solution.title} className={`group flex min-w-0 flex-col overflow-hidden border bg-background transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-card ${active === i ? "border-brand-orange" : "border-border hover:border-brand-orange/70"}`}>
+              <div className="relative aspect-[1.6] overflow-hidden bg-brand-navy">
+                <img src={solution.image} alt={solution.alt} width={1024} height={768} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <span className="absolute left-4 top-4 border border-brand-white/20 bg-brand-navy/85 px-2.5 py-1 font-mono text-[10px] font-bold text-brand-orange">{String(i + 1).padStart(2, "0")} / 06</span>
+                <span className="absolute bottom-4 right-4 grid size-9 place-items-center border border-brand-orange/50 bg-brand-navy/80 text-brand-orange backdrop-blur-sm"><Icon className="size-5" aria-hidden="true" /></span>
+              </div>
+              <div className="flex flex-1 flex-col p-5 sm:p-6">
+                <h3 className="font-display text-xl font-bold text-brand-navy">{solution.title}</h3>
+                <p className="mt-3 flex-1 text-sm leading-6 text-muted-foreground">{solution.text}</p>
+                <div className="mt-6 border-t border-border pt-4">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 font-mono text-[10px] font-semibold uppercase text-brand-navy/70">{solution.flow.map((step, stepIndex) => <span key={step} className="inline-flex items-center gap-2">{stepIndex > 0 && <ArrowRight className="size-3 text-brand-orange" aria-hidden="true" />}{step}</span>)}</div>
+                </div>
+                <Button type="button" variant="ghost" aria-expanded={active === i} aria-controls={active === i ? "solution-architecture" : undefined} onClick={() => selectSolution(i)} className="mt-5 h-11 w-full justify-between rounded-none border border-brand-navy/15 px-4 font-mono text-[11px] font-bold uppercase text-brand-navy hover:border-brand-orange hover:bg-brand-light hover:text-brand-navy">{active === i ? "Close architecture" : "View architecture"}<ArrowRight className={`size-4 text-brand-orange transition-transform ${active === i ? "rotate-90" : "group-hover:translate-x-1"}`} /></Button>
+              </div>
+            </motion.article>
+          ); })}
         </div>
+        {selected && <div ref={detailRef} id="solution-architecture" className="mt-5 scroll-mt-24 border-l-4 border-brand-orange bg-brand-navy px-5 py-7 text-brand-white sm:px-8 sm:py-8" aria-live="polite">
+          <div className="flex flex-wrap items-center justify-between gap-4"><div><span className="font-mono text-[10px] font-bold uppercase text-brand-orange">Solution architecture</span><h3 className="mt-2 font-display text-xl font-bold sm:text-2xl">{selected.title}</h3></div><Button type="button" variant="ghost" size="icon" aria-label="Close architecture" onClick={() => setActive(null)} className="size-11 rounded-none border border-brand-white/20 text-brand-white hover:bg-brand-white/10 hover:text-brand-white"><X className="size-5" /></Button></div>
+          <div className="mt-6 flex flex-wrap items-center gap-2 sm:gap-3">{selected.flow.map((step, stepIndex) => <div key={step} className="flex items-center gap-2 sm:gap-3">{stepIndex > 0 && <ArrowRight className="size-4 shrink-0 text-brand-orange" aria-hidden="true" />}<span className="border border-brand-white/20 px-3 py-2 font-mono text-xs font-semibold text-brand-white">{step}</span></div>)}</div>
+          <p className="mt-5 max-w-3xl text-sm leading-7 text-brand-white/75">{selected.detail}</p>
+        </div>}
       </div>
     </section>
   );
