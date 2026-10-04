@@ -327,7 +327,13 @@ function Architecture() {
 
 function Solutions() {
   const [active, setActive] = useState<number | null>(null);
+  const detailRef = useRef<HTMLDivElement>(null);
   const selected = active === null ? null : solutions[active];
+  const selectSolution = (index: number) => {
+    if (active === index) { setActive(null); return; }
+    setActive(index);
+    window.setTimeout(() => detailRef.current?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "center" }), 80);
+  };
   return (
     <section id="solutions" className="bg-background py-24 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -346,12 +352,12 @@ function Solutions() {
                 <div className="mt-6 border-t border-border pt-4">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 font-mono text-[10px] font-semibold uppercase text-brand-navy/70">{solution.flow.map((step, stepIndex) => <span key={step} className="inline-flex items-center gap-2">{stepIndex > 0 && <ArrowRight className="size-3 text-brand-orange" aria-hidden="true" />}{step}</span>)}</div>
                 </div>
-                <Button type="button" variant="ghost" aria-expanded={active === i} aria-controls="solution-architecture" onClick={() => setActive(active === i ? null : i)} className="mt-5 h-11 w-full justify-between rounded-none border border-brand-navy/15 px-4 font-mono text-[11px] font-bold uppercase text-brand-navy hover:border-brand-orange hover:bg-brand-light hover:text-brand-navy">{active === i ? "Close architecture" : "View architecture"}<ArrowRight className={`size-4 text-brand-orange transition-transform ${active === i ? "rotate-90" : "group-hover:translate-x-1"}`} /></Button>
+                <Button type="button" variant="ghost" aria-expanded={active === i} aria-controls={active === i ? "solution-architecture" : undefined} onClick={() => selectSolution(i)} className="mt-5 h-11 w-full justify-between rounded-none border border-brand-navy/15 px-4 font-mono text-[11px] font-bold uppercase text-brand-navy hover:border-brand-orange hover:bg-brand-light hover:text-brand-navy">{active === i ? "Close architecture" : "View architecture"}<ArrowRight className={`size-4 text-brand-orange transition-transform ${active === i ? "rotate-90" : "group-hover:translate-x-1"}`} /></Button>
               </div>
             </motion.article>
           ); })}
         </div>
-        {selected && <div id="solution-architecture" className="mt-5 border-l-4 border-brand-orange bg-brand-navy px-5 py-7 text-brand-white sm:px-8 sm:py-8" aria-live="polite">
+        {selected && <div ref={detailRef} id="solution-architecture" className="mt-5 scroll-mt-24 border-l-4 border-brand-orange bg-brand-navy px-5 py-7 text-brand-white sm:px-8 sm:py-8" aria-live="polite">
           <div className="flex flex-wrap items-center justify-between gap-4"><div><span className="font-mono text-[10px] font-bold uppercase text-brand-orange">Solution architecture</span><h3 className="mt-2 font-display text-xl font-bold sm:text-2xl">{selected.title}</h3></div><Button type="button" variant="ghost" size="icon" aria-label="Close architecture" onClick={() => setActive(null)} className="size-11 rounded-none border border-brand-white/20 text-brand-white hover:bg-brand-white/10 hover:text-brand-white"><X className="size-5" /></Button></div>
           <div className="mt-6 flex flex-wrap items-center gap-2 sm:gap-3">{selected.flow.map((step, stepIndex) => <div key={step} className="flex items-center gap-2 sm:gap-3">{stepIndex > 0 && <ArrowRight className="size-4 shrink-0 text-brand-orange" aria-hidden="true" />}<span className="border border-brand-white/20 px-3 py-2 font-mono text-xs font-semibold text-brand-white">{step}</span></div>)}</div>
           <p className="mt-5 max-w-3xl text-sm leading-7 text-brand-white/75">{selected.detail}</p>
