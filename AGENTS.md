@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep industry-specific imagery, challenge, approach, and deliverables together in one data collection; the shared industry selector and contact choices derive from it to prevent mismatched sector content.
