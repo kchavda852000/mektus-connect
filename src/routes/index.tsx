@@ -370,7 +370,7 @@ function Metric({ label, value, suffix, change, icon: Icon }: { label:string; va
 function Industries() {
   const [active, setActive] = useState(0);
   const detailRef = useRef<HTMLDivElement>(null);
-  const selected = industryDetails[active];
+  const selected = industryDetails[active] ?? industryDetails[0];
   const selectIndustry = (index: number) => {
     setActive(index);
     if (window.matchMedia("(max-width: 639px)").matches) {
